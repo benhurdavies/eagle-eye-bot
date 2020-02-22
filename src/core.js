@@ -1,12 +1,15 @@
 import SlackBot from "slackbots";
 
-import { setGetUsers, loadUsers, getUser } from "./users";
+import { users, channels, imChannels, groups } from "./cache";
+import classifyEvents from "./classifyEvents";
 
 const dummy = () => {};
 
 const eventHooks = {
   start: dummy,
-  message: dummy
+  message_channel: dummy,
+  message_im: dummy,
+  message_group: dummy
 };
 
 function connect() {
@@ -17,11 +20,20 @@ function connect() {
     name: botName
   });
 
-  setGetUsers(() => bot.getUsers());
+  users.setGetData(() => bot.getUsers().then(item => item.members));
+  channels.setGetData(() => bot.getChannels().then(item => item.channels));
+  imChannels.setGetData(() => bot.getImChannels().then(item => item.ims));
+  groups.setGetData(() => bot.getGroups().then(item => item.groups));
 
-  bot.on("start", async function() {
-    await loadUsers();
+  bot.on("start", () => {
     getEventHandler("start")();
+  });
+
+  bot.on("message", async data => {
+    const cEvents = await classifyEvents(data);
+    if (cEvents) {
+      getEventHandler(cEvents.name)({ payload: data, meta: cEvents.meta });
+    }
   });
 
   return bot;

@@ -1,5 +1,4 @@
 import * as core from "./core";
-import { setGetUsers, loadUsers, getUser } from "./users";
 
 if(process.env.NODE_ENV !== 'production'){
   require('dotenv').config();
@@ -17,16 +16,29 @@ core.on("start", () => {
   bot.postMessageToChannel("general", "I am online!", params);
 });
 
-bot.on("message", data => {
-  // all ingoing events https://api.slack.com/rtm
-  const { type,subtype } = data;
-  if (type === "message" && subtype!=='bot_message') {
-    console.log({ data });
-    //getUser('BU2B4576D').then(console.log)
-    bot.getImChannels().then(console.log);
-  }
+core.on('message_channel',(data)=>{
+  console.log('channel message',data);
+})
 
-});
+core.on('message_im',(data)=>{
+  console.log('bot personal message',data);
+})
+
+core.on('message_group',(data)=>{
+  console.log('bot in a group',data);
+})
+
+// bot.on("message", data => {
+//   // all ingoing events https://api.slack.com/rtm
+//   const { type,subtype } = data;
+//   //if (type === "message" && subtype!=='bot_message') {
+//     console.log({ data });
+//     //getUser('BU2B4576D').then(console.log)
+//     //bot.getImChannels().then(console.log);
+//     //bot.getGroups().then(console.log);
+//   //}
+
+// });
 
 // bot.on('error', function(data) {
 //     // all ingoing events https://api.slack.com/rtm
