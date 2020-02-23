@@ -30,9 +30,14 @@ function connect() {
   });
 
   bot.on("message", async data => {
+    const { user: userId } = data;
     const cEvents = await classifyEvents(data);
+    const user = await users.get(userId);
     if (cEvents) {
-      getEventHandler(cEvents.name)({ payload: data, meta: cEvents.meta });
+      getEventHandler(cEvents.name)({
+        payload: data,
+        meta: { ...cEvents.meta, user }
+      });
     }
   });
 

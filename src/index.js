@@ -1,7 +1,7 @@
 import * as core from "./core";
 
-if(process.env.NODE_ENV !== 'production'){
-  require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
 const bot = core.connect();
@@ -16,17 +16,32 @@ core.on("start", () => {
   bot.postMessageToChannel("general", "I am online!", params);
 });
 
-core.on('message_channel',(data)=>{
-  console.log('channel message',data);
-})
+core.on("message_channel", data => {
+  console.log("channel message", data);
+  const {
+    payload,
+    meta: { user, channel }
+  } = data;
+  bot.postMessageToChannel(channel.name,'I am here guys..');
+});
 
-core.on('message_im',(data)=>{
-  console.log('bot personal message',data);
-})
+core.on("message_im", data => {
+  console.log("bot personal message", data);
+  const {
+    payload,
+    meta: { user, channel }
+  } = data;
+  bot.postMessageToUser(user.name,'hey, how are you?');
+});
 
-core.on('message_group',(data)=>{
-  console.log('bot in a group',data);
-})
+core.on("message_group", data => {
+  console.log("bot in a group", data);
+  const {
+    payload,
+    meta: { user, channel }
+  } = data;
+  bot.postMessageToGroup(channel.name,'I am here guys..');
+});
 
 // bot.on("message", data => {
 //   // all ingoing events https://api.slack.com/rtm
